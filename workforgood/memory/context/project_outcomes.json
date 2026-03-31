@@ -1,0 +1,14 @@
+[
+  {
+    "project_id": "p_example_001",
+    "title": "Example Community Project",
+    "date": "2026-01-01",
+    "required_headcount": 10,
+    "confirmed_headcount": 0,
+    "attended_headcount": 0,
+    "completion_rate": null,
+    "volunteer_feedback_score": null,
+    "status": "pending",
+    "notes": "Seed record — replace with real project outcome data"
+  }
+]

@@ -1,0 +1,30 @@
+project: WorkForGood
+
+tools:
+  - name: volunteer_registry_api
+    description: Query and update volunteer profiles, skills, availability, and history
+    used_by:
+      - matching_agent
+      - outreach_agent
+      - confirmation_agent
+      - notification_agent
+
+  - name: project_board_api
+    description: Read project details and update project status
+    used_by:
+      - ceo_orchestrator
+      - volunteer_orchestrator
+      - operations_orchestrator
+
+  - name: notification_service
+    description: Send email, SMS, or push notifications to volunteers and staff
+    used_by:
+      - outreach_agent
+      - confirmation_agent
+      - notification_agent
+      - ceo_orchestrator         # for escalation alerts
+
+  - name: calendar_api
+    description: Create and manage calendar events for projects
+    used_by:
+      - scheduling_agent

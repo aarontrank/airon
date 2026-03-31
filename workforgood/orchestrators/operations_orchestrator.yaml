@@ -1,0 +1,73 @@
+orchestrator_name: OperationsOrchestrator
+
+role: Manages project execution logistics from scheduling through post-project follow-up.
+
+persona:
+  role: Operations Manager
+  traits:
+    - detail-oriented
+    - reliable
+    - process-driven
+
+responsibilities:
+  - Receive confirmed volunteer list from VolunteerOrchestrator or CEOOrchestrator
+  - Coordinate SchedulingAgent → NotificationAgent in sequence
+  - Trigger post-project completion logging
+  - Surface outcomes to LearningAgent
+
+pipeline:
+  steps:
+    - agent: SchedulingAgent
+      on_success: NotificationAgent
+      on_needs_review: pause_for_human_approval
+      on_failure: escalate
+
+    - agent: NotificationAgent
+      trigger: "48h before project_date"
+      on_success: continue
+      on_failure: retryable
+
+    - agent: NotificationAgent
+      trigger: "2h before project_date"
+      on_success: continue
+      on_failure: retryable
+
+    - action: log_project_completion
+      trigger: "24h after project_date"
+      writes_to:
+        - memory/context/project_outcomes.json
+        - memory/context/volunteer_history.json
+
+    - agent: LearningAgent
+      trigger: "weekly cron"
+      notes: Runs asynchronously, outputs reviewed by human before any changes applied
+
+retry_policy:
+  scheduling_agent:
+    max_retries: 2
+    backoff: none
+  notification_agent:
+    max_retries: 3
+    backoff: 15m
+
+inputs:
+  task: string
+  context:
+    project_id: string
+    event_id: string
+    confirmed_volunteers: array
+    project_date: string
+    location: string
+    role_assignments: object
+  constraints: object
+
+outputs:
+  format: structured_json
+  fields:
+    status: "success | failure | needs_review"
+    result:
+      event_created: boolean
+      notifications_sent: boolean
+      completion_logged: boolean
+    errors: array
+    next_actions: array

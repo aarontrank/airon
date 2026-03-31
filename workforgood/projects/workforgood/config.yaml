@@ -1,0 +1,39 @@
+project_name: WorkForGood
+
+goal: Match volunteers to community projects and coordinate end-to-end execution
+
+organization:
+  type: non-profit
+  staff_contact: ops@workforgood.org
+
+audience:
+  primary: volunteers and community partners
+  tone: warm, clear, action-oriented
+
+messaging_pillars:
+  - community impact
+  - volunteer empowerment
+  - reliable coordination
+
+autonomy_overrides:
+  matching_agent:
+    level: full
+  outreach_agent:
+    requires_approval: true
+    approval_scope: first_contact_only
+  confirmation_agent:
+    level: full
+  scheduling_agent:
+    level: full
+  notification_agent:
+    level: full
+    exception: cancellation_notices_require_human_confirmation
+  learning_agent:
+    level: conditional
+    requires_approval: true
+    approval_scope: all_suggestions
+
+escalation:
+  default_contact: ops@workforgood.org
+  method: notification_service
+  channel: email

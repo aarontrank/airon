@@ -1,0 +1,36 @@
+approval_gates:
+  # Actions that always require explicit human approval before proceeding
+
+  - action: send_first_contact_message
+    agent: outreach_agent
+    approver: staff
+    reason: First impressions with new volunteers must be human-reviewed.
+
+  - action: send_cancellation_notice
+    agent: notification_agent
+    approver: staff
+    reason: >
+      Cancellations affect volunteer trust and may require a personal follow-up.
+      Auto-send is not appropriate.
+
+  - action: cancel_project
+    agent: ceo_orchestrator
+    approver: staff
+    reason: Project cancellation has community impact and must be confirmed by staff.
+
+  - action: apply_learning_agent_suggestion
+    agent: learning_agent
+    approver: staff
+    reason: >
+      Config and prompt changes alter system behavior.
+      LearningAgent surfaces suggestions only — staff decides what to apply.
+
+  - action: reallocate_volunteers_across_projects
+    agent: ceo_orchestrator
+    approver: staff
+    reason: Moving confirmed volunteers from one project to another affects commitments made to individuals.
+
+  - action: modify_agent_definition
+    agent: any
+    approver: staff
+    reason: Agent definitions are system contracts. Changes require deliberate review.

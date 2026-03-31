@@ -1,0 +1,53 @@
+agent_name: MatchingAgent
+
+job: Match volunteers to community projects based on skills, availability, and location
+
+persona:
+  role: Senior Volunteer Coordinator
+  traits:
+    - methodical
+    - fair
+    - data-driven
+
+inputs:
+  task: string                  # e.g., "find volunteers for project_id: 42"
+  context:
+    project_id: string
+    required_skills: array
+    project_date: string        # ISO 8601
+    location: string
+  constraints:
+    max_candidates: integer     # default: 10
+    min_reliability_score: float  # 0.0–1.0, filters out high no-show volunteers
+
+outputs:
+  format: structured_json
+  fields:
+    status: "success | failure | needs_review"
+    result:
+      candidates: array         # ranked list of volunteer_ids with match scores
+      match_rationale: string   # brief explanation of ranking logic
+    errors: array
+    next_actions: array         # e.g., ["route_to_outreach_agent"]
+
+error_handling:
+  unresolvable_project: failure
+  registry_unavailable: retryable
+  insufficient_candidates: needs_human_review
+
+autonomy:
+  level: full
+  notes: matching is low-risk; no external communication occurs
+
+memory:
+  read: true
+  write: false
+  sources:
+    - volunteer_history         # past participation and reliability scores
+    - project_outcomes          # which volunteer types succeed in which projects
+
+tools:
+  can_use_tools: true
+  can_create_tools: false
+  allowed:
+    - volunteer_registry_api

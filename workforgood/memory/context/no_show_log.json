@@ -1,0 +1,10 @@
+[
+  {
+    "volunteer_id": "v_example_001",
+    "project_id": "p_example_001",
+    "date": "2026-01-01",
+    "reason_given": null,
+    "contacted_for_followup": false,
+    "notes": "Seed record — replace with real no-show data"
+  }
+]

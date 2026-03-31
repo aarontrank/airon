@@ -1,0 +1,39 @@
+triggers:
+  scheduled:
+    - name: weekly_slot_review
+      schedule: "0 8 * * 1"        # Every Monday at 8:00am
+      description: >
+        Review all open projects for unfilled volunteer slots.
+        Routes to CEOOrchestrator for prioritization and assignment.
+      routes_to: ceo_orchestrator
+      payload:
+        trigger:
+          type: weekly_slot_review
+          source: cron
+
+    - name: weekly_learning_review
+      schedule: "0 9 * * 1"        # Every Monday at 9:00am
+      description: >
+        Run LearningAgent on the past week's outcomes.
+        Output reviewed by staff — no auto-apply.
+      routes_to: operations_orchestrator
+      payload:
+        trigger:
+          type: learning_review
+          source: cron
+        context:
+          evaluation_window: last_7_days
+          focus_area: all
+
+    - name: post_project_completion_log
+      schedule: "0 10 * * *"       # Daily at 10:00am
+      description: >
+        Log outcomes for any projects that completed in the last 24 hours.
+        Updates volunteer_history and project_outcomes memory.
+      routes_to: operations_orchestrator
+      payload:
+        trigger:
+          type: log_completions
+          source: cron
+        context:
+          window: last_24_hours

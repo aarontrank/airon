@@ -1,0 +1,32 @@
+permissions:
+  # Who can modify agent definition files (agents/*.yaml)
+  agent_definitions:
+    read: [all_agents, orchestrators, staff]
+    write: [staff]
+    notes: Agent definitions are stable contracts. Changes require staff review.
+
+  # Who can modify project config files (projects/**/*.yaml)
+  project_configs:
+    read: [all_agents, orchestrators, staff]
+    write: [orchestrators, staff]
+    notes: >
+      Orchestrators may propose config changes via LearningAgent suggestions,
+      but changes must be reviewed and applied by staff.
+
+  # Who can deploy agents or orchestrators to production
+  deployment:
+    read: [staff]
+    write: [staff]
+    notes: No automated deployment without human sign-off.
+
+  # Who can read audit logs
+  audit_logs:
+    read: [staff]
+    write: [system]   # append-only; no agent or human may edit existing records
+    notes: Audit log is append-only. Deletions require staff escalation.
+
+  # Who can trigger the learning agent
+  learning_agent:
+    trigger: [operations_orchestrator, staff]
+    apply_suggestions: [staff]
+    notes: LearningAgent outputs are suggestions only. Staff applies changes.

@@ -1,0 +1,44 @@
+{
+  "error_codes": {
+    "TOOL_UNAVAILABLE": {
+      "description": "A required external tool or API is unreachable.",
+      "retryable": true,
+      "escalate_after_retries": 3
+    },
+    "INSUFFICIENT_DATA": {
+      "description": "Not enough data to complete the task (e.g., too few matching volunteers).",
+      "retryable": false,
+      "escalate": true
+    },
+    "CONTACT_INFO_MISSING": {
+      "description": "Volunteer contact information is absent or invalid.",
+      "retryable": false,
+      "escalate": true
+    },
+    "HEADCOUNT_NOT_MET": {
+      "description": "Confirmed volunteer count is below the project minimum.",
+      "retryable": false,
+      "escalate": true
+    },
+    "SCHEDULING_CONFLICT": {
+      "description": "An unresolvable calendar conflict was detected.",
+      "retryable": false,
+      "escalate": true
+    },
+    "APPROVAL_REQUIRED": {
+      "description": "This action requires human approval before proceeding.",
+      "retryable": false,
+      "escalate": true
+    },
+    "PARTIAL_DELIVERY_FAILURE": {
+      "description": "Some notifications were delivered but others failed.",
+      "retryable": true,
+      "escalate_after_retries": 2
+    },
+    "UNRECOVERABLE_ERROR": {
+      "description": "An unexpected error with no defined recovery path.",
+      "retryable": false,
+      "escalate": true
+    }
+  }
+}

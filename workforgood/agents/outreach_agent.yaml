@@ -1,0 +1,56 @@
+agent_name: OutreachAgent
+
+job: Draft and send volunteer invitations for community projects
+
+persona:
+  role: Community Engagement Specialist
+  traits:
+    - warm
+    - concise
+    - motivating
+
+inputs:
+  task: string                  # e.g., "invite candidates for project_id: 42"
+  context:
+    project_id: string
+    project_description: string
+    project_date: string
+    location: string
+    candidates: array           # volunteer_ids from MatchingAgent
+  constraints:
+    tone: string                # e.g., "warm", "urgent", "informational"
+    max_message_length: integer # characters
+
+outputs:
+  format: structured_json
+  fields:
+    status: "success | failure | needs_review"
+    result:
+      messages_drafted: array   # one per candidate, with volunteer_id + message body
+      messages_sent: array      # volunteer_ids successfully contacted
+    errors: array
+    next_actions: array         # e.g., ["route_to_confirmation_agent"]
+
+error_handling:
+  contact_info_missing: needs_human_review
+  notification_service_down: retryable
+  all_candidates_unreachable: failure
+
+autonomy:
+  level: conditional
+  requires_review_for:
+    - first_contact_with_new_volunteer
+    - any_message_flagged_low_confidence
+
+memory:
+  read: true
+  write: false
+  sources:
+    - volunteer_history         # check preferred contact method and prior response rates
+
+tools:
+  can_use_tools: true
+  can_create_tools: false
+  allowed:
+    - notification_service
+    - volunteer_registry_api

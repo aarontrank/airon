@@ -1,0 +1,64 @@
+orchestrator_name: VolunteerOrchestrator
+
+role: Manages the volunteer pipeline from candidate identification through confirmed assignment.
+
+persona:
+  role: Volunteer Programs Manager
+  traits:
+    - people-focused
+    - organized
+    - persistent
+
+responsibilities:
+  - Receive project needs from CEOOrchestrator
+  - Coordinate MatchingAgent → OutreachAgent → ConfirmationAgent in sequence
+  - Handle partial failures (e.g., re-run matching if outreach yield is too low)
+  - Report headcount status back to CEOOrchestrator
+
+pipeline:
+  steps:
+    - agent: MatchingAgent
+      on_success: OutreachAgent
+      on_failure: escalate
+
+    - agent: OutreachAgent
+      on_success: ConfirmationAgent
+      on_needs_review: pause_for_human_approval
+      on_failure: escalate
+
+    - agent: ConfirmationAgent
+      on_success:
+        condition: result.headcount_met == true
+        route_to: OperationsOrchestrator
+      on_needs_review: escalate
+      on_failure: escalate
+
+retry_policy:
+  matching_agent:
+    max_retries: 2
+    backoff: none           # retry immediately; registry is fast
+  outreach_agent:
+    max_retries: 1
+    backoff: 30m            # wait before re-sending
+  confirmation_agent:
+    max_retries: 0          # do not retry; surface to human
+
+inputs:
+  task: string
+  context:
+    project_id: string
+    required_skills: array
+    project_date: string
+    location: string
+    required_headcount: integer
+  constraints: object
+
+outputs:
+  format: structured_json
+  fields:
+    status: "success | failure | needs_review"
+    result:
+      confirmed_volunteers: array
+      headcount_met: boolean
+    errors: array
+    next_actions: array

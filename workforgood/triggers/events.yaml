@@ -1,0 +1,49 @@
+triggers:
+  event_driven:
+    - name: new_project_submitted
+      source: project_board_api
+      event: project.submitted
+      description: >
+        A community partner has submitted a new project.
+        Immediately routes to CEOOrchestrator for prioritization.
+      routes_to: ceo_orchestrator
+      payload_mapping:
+        project_id: event.project_id
+        trigger.type: new_project_submitted
+        trigger.source: project_board_api
+
+    - name: volunteer_rsvp_declined
+      source: volunteer_registry_api
+      event: volunteer.rsvp_declined
+      description: >
+        A volunteer has declined their assignment.
+        Routes back to VolunteerOrchestrator to promote from waitlist.
+      routes_to: volunteer_orchestrator
+      payload_mapping:
+        project_id: event.project_id
+        volunteer_id: event.volunteer_id
+        trigger.type: rsvp_declined
+
+    - name: project_cancelled_by_partner
+      source: project_board_api
+      event: project.cancelled
+      description: >
+        A community partner has cancelled a project.
+        Requires human approval before sending cancellation notices to volunteers.
+      routes_to: ceo_orchestrator
+      requires_approval: true
+      payload_mapping:
+        project_id: event.project_id
+        trigger.type: project_cancelled
+
+    - name: new_volunteer_registered
+      source: volunteer_registry_api
+      event: volunteer.registered
+      description: >
+        A new volunteer has joined the registry.
+        No immediate action — record is available for future matching.
+      routes_to: null
+      action: log_to_audit
+      payload_mapping:
+        volunteer_id: event.volunteer_id
+        trigger.type: volunteer_registered

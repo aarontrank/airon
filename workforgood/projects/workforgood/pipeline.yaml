@@ -1,0 +1,46 @@
+pipeline_name: WorkForGood Standard Pipeline
+
+description: >
+  Full execution flow from project intake through post-project learning.
+  Triggered by a new project submission or weekly slot review cron.
+
+stages:
+  - name: intake
+    trigger:
+      - type: event
+        source: project_board_api
+        event: project_submitted
+      - type: cron
+        schedule: "0 8 * * 1"   # Every Monday at 8am — weekly slot review
+    routes_to: ceo_orchestrator
+
+  - name: volunteer_coordination
+    orchestrator: volunteer_orchestrator
+    agents_in_order:
+      - matching_agent
+      - outreach_agent
+      - confirmation_agent
+    exits:
+      success: operations_coordination
+      failure: escalate_to_human
+
+  - name: operations_coordination
+    orchestrator: operations_orchestrator
+    agents_in_order:
+      - scheduling_agent
+      - notification_agent        # 48h reminder
+      - notification_agent        # 2h reminder
+    post_project:
+      - log_completion
+      - update_volunteer_history
+    exits:
+      success: learning_review
+      failure: escalate_to_human
+
+  - name: learning_review
+    orchestrator: operations_orchestrator
+    agent: learning_agent
+    trigger:
+      type: cron
+      schedule: "0 9 * * 1"      # Every Monday at 9am
+    notes: Outputs reviewed by human staff; no auto-apply

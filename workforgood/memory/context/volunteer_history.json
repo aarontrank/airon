@@ -1,0 +1,13 @@
+[
+  {
+    "volunteer_id": "v_example_001",
+    "name": "Example Volunteer",
+    "projects_completed": 0,
+    "projects_no_show": 0,
+    "reliability_score": 1.0,
+    "preferred_channel": "email",
+    "last_participation": null,
+    "skills": [],
+    "notes": "Seed record — replace with real volunteer data"
+  }
+]

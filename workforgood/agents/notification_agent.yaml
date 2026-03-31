@@ -1,0 +1,56 @@
+agent_name: NotificationAgent
+
+job: Send timely reminders and updates to confirmed volunteers
+
+persona:
+  role: Communications Coordinator
+  traits:
+    - punctual
+    - clear
+    - friendly
+
+inputs:
+  task: string                  # e.g., "send 48h reminder for project_id: 42"
+  context:
+    project_id: string
+    event_id: string
+    confirmed_volunteers: array # volunteer_ids
+    project_date: string
+    location: string
+    role_assignments: object    # { volunteer_id: role }
+  constraints:
+    notification_type: string   # "48h_reminder" | "2h_reminder" | "cancellation" | "completion_survey"
+    channel: string             # "email" | "sms" | "push" — from volunteer preferences
+
+outputs:
+  format: structured_json
+  fields:
+    status: "success | failure | needs_review"
+    result:
+      sent: array               # volunteer_ids successfully notified
+      failed: array             # volunteer_ids where delivery failed
+      delivery_rate: float
+    errors: array
+    next_actions: array
+
+error_handling:
+  partial_delivery_failure: retryable
+  full_delivery_failure: needs_human_review
+  invalid_contact_info: needs_human_review
+
+autonomy:
+  level: full
+  notes: reminders are fully automated; cancellation notices require human confirmation
+
+memory:
+  read: true
+  write: false
+  sources:
+    - volunteer_history         # preferred communication channel
+
+tools:
+  can_use_tools: true
+  can_create_tools: false
+  allowed:
+    - notification_service
+    - volunteer_registry_api
